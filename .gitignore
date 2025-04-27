@@ -10,3 +10,4 @@
 /.idea
 /.vscode
 .php-cs-fixer.cache
+database.sqlite
