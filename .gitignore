@@ -1,0 +1,12 @@
+.DS_Store
+/.phpunit.cache
+/vendor
+.env
+.env.docker-compose
+.env.backup
+.env.production
+.phpunit.result.cache
+/.fleet
+/.idea
+/.vscode
+.php-cs-fixer.cache
