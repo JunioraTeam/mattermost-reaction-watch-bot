@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: mattermost
+  name: mattermost-reaction-watch-bot-envs
+data:
+  MATTERMOST_BASE_URL: "https://mattermost.juniora.org"
+  MATTERMOST_WEBSOCKET_URL: "wss://mattermost.juniora.org/api/v4/websocket"
+  THREAD_WATCH_EMOJI_NAME: "reaction-watch-thread"
+  DM_WATCH_EMOJI_NAME: "reaction-watch-dm"
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: redis-auth
+  namespace: juniora
+spec:
+  encryptedData:
+    BOT_TOKEN: AgBx8BpgPiRgD9xad8vKclmezgSS7b89AvvdyS3yUk7XorY5j/dRoKa8ut/dShpVjmcos7qtJWlxtNxs5vtDFnjqa9Hjm68sJYp5B5rsucLjpQBblerWCo3Tc9pX5jQKuGzwZnd0Qfy5MFH8aJzihC2hhhvWo4+89PBUdr2coTqdGW2rx4umQopf0Js0dMQYL7AQtD3nX9rCLSZ5GdiP9El1fRY6rQqpzwa9oW9GzYklMGUD0sveBXFSJab2QSvwM6aHni0mAlwAH9JOknSonFra/rjmPn3c8Xu4OKDzYYAvBzw0degYq5RfyUlPo+U0EemBHu9QP+apCsDWfz/Awthf3C+9bwTbyinhkWAR49aBcsjv5dZlTMpV8TECZltrZZCt7zd+mRombaO1Ye/P6EekK2DjOygKfDPKzs2cNZ2T5BghQ4pGHeADcFu5g/av703QKcftptbyaX1tTvjwqaoHmfzIRYCvAA3qBhSBalWEbSsHDw6uUEPBesasjRDkTycP29sGGJZZ/CMnnbw5iOiz3SW7VpVS+pm4sk5/74FzI8Ywbb6nxy8A+KoIbp7URhOW0MNMMCjpj7B+doNXxFsEalHNtd/c13NE2FZe+sz/qe9hIPMvb1gpWpFwrJcMyF67i8ebINSazet7CKTWSFulWZaLINQs1BMqXiScpTAMewjtr6uzg5NveM8g5MGWySb5IMecgBoUYQUnpkE+4Eg1xzOUI6P773FpXg==
+    DB_HOST: AgCeoq3AXDl/gPUKeUMSaEm3LppuWAWoAmcVKz7fQLKT7QpBKchgDUoBjmsNNgSu0iRxfKn/tTrlUNk1QL8ArJI3UfGa1gmNxAJ02Su1hbp0Zhqe/1I7wmfz3E2pp4inp9ZCpry9XZArieyhITKr7MTZJE0nMemIwlaA7CaTj8KUrqYsYWmD9UsJVWjrjIwdVgxOd5g+3dzF4+CQe6oi4M2uYOs9yRCNNeCiRwhvEXhUsXvq9dms12izv/y+L3+0avmf3WGcKomQJChK44AdNa+/XbDXqI04TZ4vJdm65JfPADGeec6iKus0QGpImmaYsvqnv0UC90jdjCIm6WFrLF9TSXTI0Oa6UpKppkFi2bppbB8ElNK8M+Z1N/cthnzAtyZw9n9zWTbRbKXzWGdGVVE2qke15wai+GQa1yWNGwLBg95InAnJFydFvMtLr2Jho3AbKC+Z5YOFIsdLnctSGunhFGL7dJK7qDZmvrQg/0mXjW+46g1HfWud0Tw+Y2/v0/lMKTucC4L1LKDpE8NW40Wjcxj1jPFLzZSVuceie7QjGPTr7/fEaO8mUnVdMOObZg+Lf+gXX3FLOC/4Xf2iH2I5t4aUrzRXKsqYWWu04GE/F69+JfVKbFZcbHYGp6640QUipM2c5DuNIG3eflQn9MaD2y0DFwUGeNQdg2hT1eDjHxPu81RWQaA9Rho1iIzZKQmCJSQc60/EptF+
+    DB_NAME: AgDF6jkjw3RIOEAzgg9EtTjWAZSiSxEUrLO9Jo/b+7z8cVsIL4zhlykkAwZRn44QBlNyS5NwHyXda8MgT28HHJpArp2PzH86GZkwcDoCexavB/eDvu2iCuBfneGJDjiCcWu8IcMMaEPtwr/F5UYPArdCdeKADxQVgiDOAteVxGu/E+weKyhyEsj3dI34IE8FhNwLLavumC5EVs3yUGU2zzCZbVemYi7+bZEl/i9uTkno6gBwcc0BzIJ5tB+Dzt3v434my9n+5k5UXVDo/EzVUoqj/W6caxhUL8o9HcsCe0RR6d0G9CSesZqCps3Mww3k4uRJh+iTCLAByfpjvILLI/vCiLCPDwf8+s1kWlCgp0X31x4cQZx6XvTVMrKArr4NY3ndymZjNp8jbgTkvzmfagDD1hsMLTDipIQ5yh6A6qp2MeMJgkE59ScQ2Encl8WOmWw7zhga3Cfc0OEAubljCt1udubgtm1zBu9QVPFWOn77eBWyTZ9G/r4IGVOony/Ll5PSUhXAuZqF72geVbzr7Kn/76i0fM1L0hti4Wqk0mdrQ3Sodk/96+gfsYW+TyeyT0m5KzBRyto8NSVTaSj0jHJJcOKqoh8BLYGoB4RthoUCTX9NNe31NSWbXpR3rWN3bGT96PoPUv6k9jnnMQD08ShgEr4pMLQOgCKKTabs1Na2gzuYEWVXjreeW4IBJUo6SSwP0aVG+zPSNjwunYhIB1aC6urCgXUpbhXQMOBvAg==
+    DB_PASSWORD: AgCS0YSyacbdivNgPk/zmA2NeVq+fsghdRzg+Uz4P8BEdrGuG1I3F4KMMo94WownaDjnRLJwYGQxiIijlh7zMt58mMFp3R920Yuo3XLFYGLAMpytYKgfuyYrck2JGXqPDRJ0Rc3OLJON6SmnQritUS278yoE9VPt0gYs87AChN6a85sKcxXyKM0IGTtwDF0tvQKRJx1KQj+sJa2bzt64MNHGiM6QWipdkM5xQmdtv1G5fC8c+dJ2DtxteAa5byt9sruSYJuggnD2Lg7E7p0fg0L3COvnlqywlV/SV0JCIkDdepu4lZMdJsRKcqyDAyYrP4ZcVvpmIauS2zdE0ZWDDwHviVCkB7pfbMTtt7kfAcl0tH8Hf0cEPhzIc9n5ezR2oMwW3IMRfPG2xlB9W2DBpAOgZEVIGN/nHF11SBjp9uPTzA3TU/3fLIoBBHau3cXkmuekFigFqVJfZ5zT8FGqYfW22BUHDFH/bFPsqGqJmNDnlMHaZuM94Wt6NmrSNKX00aHKFPrMEnkSmMV56QnlrSbJhpGxxD0tdHRgItVu5VchxD49gY0dxAsNkHhwFSw0JzhT0OZh1EFDcU9lx9ToOs/i7DB1PYZkJaNcAfMt+edOZELH39LfXSqeW1JyipwqXFikNGVbHXgZKXlZac02IUYoXdOaWdkbhk6dbhUpAjyzAZsgv7EqPetjZ2I7kXQ1ObS3/PMA5T9RBS1lW51+Q8P6T7KWPaxNf3KHvrFxkXMpEA==
+    DB_TYPE: AgCpR9062s5xQep+KN64oWQfdaaIeMW7w+iBiKYW1Vf4XBartb6/yQ+XI+fiWzaXoZBfAibz0IINKCXV/FJJoNtNRX383ECrv9GglrfJOsRSeYLuhAIAfndvZxMKuI90wPYWs1dIqoJ0Hey6kmkCG2zyaAmQJrEUKA/GHMuj1pBd95vWKM5YA9AKWq2NVKVuhSgVlSyoemXEuXuH6agR1gUv49mTq9/qWtjhYC/zp5ZQ3OxKogqVTz2uBU5HSlxeGGjo57RthEhH/Rfj1i3AE9CA7kvJeYky+kC8MSeKSdKWLYMFC0nZZaRg6RB+D7HVxN/lKGyjOXF7RoIyRcdWkjUBc6XBmxI4uidEeaKUUaYbv35tgltiT8T5nzO7gJv8vIv16NkDxE1Em4tljCM3Xi42NVG3PZ1CxOsSvBU8LzXfMf+I1C/VhjSXAy11Nwbwg63VEuGmUggjcfDfJ7bRSuxTxDWN/6fkNFoP/bjyXePKM7fawhKMqDP05k5jps2FZV48ad8gYnkCf7JhXE6DIeVdYt39HKt7AUQ59l+Fan+/ghAc10bLYfPeOCu2M8BIYO0dHnrpleT90fcg7YDTAfPqP7tpxGYOmVhpyNXsjNSmXDQtQgrGPV5LhDAqhb/NNeXRSepGMoGzMEfIdTMjoX7so83uHxIVoM+tm+0V2u5WfO6ROOzLysUqrWfEVFsGAal/JE4XAAB8
+    DB_USERNAME: AgApfPwjffsLsFBF39j3pSGwM6ixAZ+8pubzTkK1k+JKQJWAHGSTgGgRs3vBaZqJvKB+22QqlGpvxWFIT5IwVDfNY1iwquDAQOvOhXjmI9CAPcaogcfgK2+f3KdpFmZA1G0vIGrp/E3/qv+HSmd+OvM9kJd9mXLV4BWFgkeGVLky4flMaPTotEQaLXCt9at8w3tlPnWStThte79h0DLdc0gizxn5yJ8mflcmmPkPUxwwbcEzJdeX/UwS1neciB2qT8vs+z+qE22XzIZdQVHqo4TG25ZjMrPhc0SEQVM1dQwFhx7o8yHy4pSNak89QMMjXp28Eu5WD7sKAFmV5ZRLe+588whd8YKrwmbSeHLo0tkTtOVEtU5tCK+U972xUe8zyWLV1eZwTV5FFz7wGFFGtmYMkkipD0hG24DWHBF2FMGUcwj/C987C45lNTJLFB9CTy6+0i5hRNTWtbA5yC8NJj6Noovz+e1N0EhdX2Hf0vQUGcysurqPNcnzAGOggvAIt0R+432sXVdnJEhRzyOAe04yu1MQnzj9tov01ETix5NjB8yx0aTKkJ3e0pnfF6Q07BClAm3dSjCOluY42PpGG/Q4Pkc1KD/tOcSOL/cLwR2eIqeB/VWWgW3OCj1eVB4SzUfd0+2zYThy/s4YF+pNuGeatJqIz/JaFnm99h0FHweMAgT+t5NGBdCC8ajjjOhruO6rQWSQjnI64VQjlbrkm4vN2NRMq/ciqzhGx5cKAw==
+  template:
+    metadata:
+      name: redis-auth
+      namespace: juniora
+    type: Opaque
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: mattermost
+  name: mattermost-reaction-watch-bot
+  labels:
+    app.kubernetes.io/name: "mattermost_reaction_watch_bot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "mattermost_reaction_watch_bot"
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "mattermost_reaction_watch_bot"
+    spec:
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+        - name: regcred
+      initContainers: []
+      containers:
+      - name: main
+        image: registry.git.juniora.org/juniora/mattermost-reaction-watch-bot:latest
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: mattermost-reaction-watch-bot-envs
+          - secretRef:
+              name: mattermost-reaction-watch-bot-secret-envs
+        resources:
+          requests:
+            cpu: 256m
+            memory: 512Mi
+          limits:
+            memory: 512Mi
+      volumes:
+      - name: mattermost-reaction-watch-bot-config-volume
+        configMap:
+          name: mattermost-reaction-watch-bot-config

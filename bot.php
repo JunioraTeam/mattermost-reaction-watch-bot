@@ -12,10 +12,6 @@ use Amp\Websocket\PeriodicHeartbeatQueue;
 use Dotenv\Dotenv;
 use Medoo\Medoo;
 
-define('DB_PATH', __DIR__.'/database.sqlite');
-define('THREAD_WATCH_EMOJI_NAME', 'reaction-watch-thread');
-define('DM_WATCH_EMOJI_NAME', 'reaction-watch-dm');
-
 function sendMessage(array $parameters): object
 {
     $ch = curl_init($_ENV['MATTERMOST_BASE_URL'].'/api/v4/posts');
@@ -29,7 +25,6 @@ function sendMessage(array $parameters): object
         CURLOPT_POSTFIELDS => json_encode($parameters),
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     return json_decode($response);
 }
@@ -55,7 +50,6 @@ function getUser(string $id): object
         ]),
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     $user = json_decode($response)[0];
 
@@ -80,7 +74,6 @@ function getChannel(string $id): object
         ],
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     $channel = json_decode($response);
 
@@ -105,7 +98,6 @@ function getTeam(string $id): object
         ],
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     $team = json_decode($response);
 
@@ -130,7 +122,6 @@ function getPost(string $id): object
         ],
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     $post = json_decode($response);
 
@@ -159,7 +150,6 @@ function createDirectMessageChannel(array $userIds): object
         CURLOPT_POSTFIELDS => json_encode($userIds),
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
 
     $channel = json_decode($response);
 
@@ -171,14 +161,17 @@ function createDirectMessageChannel(array $userIds): object
 $env = Dotenv::createImmutable(__DIR__);
 $env->load();
 
-$databaseExists = is_file(DB_PATH) && filesize(DB_PATH) > 0;
-
 $db = new Medoo([
-    'type' => 'sqlite',
-    'database' => DB_PATH,
+    'type' => $_ENV['DB_TYPE'],
+    'host' => $_ENV['DB_HOST'],
+    'username' => $_ENV['DB_USERNAME'],
+    'password' => $_ENV['DB_PASSWORD'],
+    'database' => $_ENV['DB_NAME'],
 ]);
 
-if (! $databaseExists) {
+$tableExists = $db->query('SHOW TABLES LIKE \'watches\';')->fetch();
+
+if (! $tableExists) {
     $db->create('watches', [
         'user_id' => [
             'VARCHAR(255)',
@@ -302,19 +295,19 @@ while (true) {
                     ]);
                 }
 
-                if (in_array($reaction->emoji_name, [THREAD_WATCH_EMOJI_NAME, DM_WATCH_EMOJI_NAME], true)) {
+                if (in_array($reaction->emoji_name, [$_ENV['THREAD_WATCH_EMOJI_NAME'], $_ENV['DM_WATCH_EMOJI_NAME']], true)) {
                     $row = [
                         'user_id' => $reaction->user_id,
                         'channel_id' => $reaction->channel_id,
                         'post_id' => $reaction->post_id,
-                        'type' => $reaction->emoji_name === THREAD_WATCH_EMOJI_NAME ? 'thread' : 'dm',
+                        'type' => $reaction->emoji_name === $_ENV['THREAD_WATCH_EMOJI_NAME'] ? 'thread' : 'dm',
                     ];
                     if (! $db->has('watches', $row)) {
                         $db->insert('watches', $row);
                         sendMessage([
                             'channel_id' => createDirectMessageChannel([$botUserId, $reaction->user_id])->id,
                             'message' => sprintf(
-                                $reaction->emoji_name === THREAD_WATCH_EMOJI_NAME
+                                $reaction->emoji_name === $_ENV['THREAD_WATCH_EMOJI_NAME']
                                     ? "از این پس، اطلاعیه ری‌اکشن‌های روی این پیام در ترد مربوط به آن ارسال خواهند شد.\n\n%s/%s/pl/%s"
                                     : "از این پس، اطلاعیه ری‌اکشن‌های روی این پیام از طریق پیام مستقیم دریافت خواهید کرد.\n\n%s/%s/pl/%s",
                                 $_ENV['MATTERMOST_BASE_URL'],
@@ -325,19 +318,19 @@ while (true) {
                     }
                 }
             } if ($message->event === 'reaction_removed') {
-                if (in_array($reaction->emoji_name, [THREAD_WATCH_EMOJI_NAME, DM_WATCH_EMOJI_NAME], true)) {
+                if (in_array($reaction->emoji_name, [$_ENV['THREAD_WATCH_EMOJI_NAME'], $_ENV['DM_WATCH_EMOJI_NAME']], true)) {
                     $row = [
                         'user_id' => $reaction->user_id,
                         'post_id' => $reaction->post_id,
-                        'type' => $reaction->emoji_name === THREAD_WATCH_EMOJI_NAME ? 'thread' : 'dm',
+                        'type' => $reaction->emoji_name === $_ENV['THREAD_WATCH_EMOJI_NAME'] ? 'thread' : 'dm',
                     ];
 
                     if ($db->has('watches', $row)) {
                         sendMessage([
                             'channel_id' => createDirectMessageChannel([$botUserId, $reaction->user_id])->id,
                             'message' => sprintf(
-                                $reaction->emoji_name === THREAD_WATCH_EMOJI_NAME
-                                    ? "از این پس، اطلاعیه ری‌اکشن‌های روی این پیام در صورتی که ری‌اکشن :".THREAD_WATCH_EMOJI_NAME.": بر روی آن باقی نمانده باشد، در ترد مربوط به آن ارسال نخواهند شد.\n\n%s/%s/pl/%s"
+                                $reaction->emoji_name === $_ENV['THREAD_WATCH_EMOJI_NAME']
+                                    ? "از این پس، اطلاعیه ری‌اکشن‌های روی این پیام در صورتی که ری‌اکشن :".$_ENV['THREAD_WATCH_EMOJI_NAME'].": بر روی آن باقی نمانده باشد، در ترد مربوط به آن ارسال نخواهند شد.\n\n%s/%s/pl/%s"
                                     : "از این پس، اطلاعیه ری‌اکشن‌های روی این پیام از طریق پیام مستقیم دریافت نخواهید کرد.\n\n%s/%s/pl/%s",
                                 $_ENV['MATTERMOST_BASE_URL'],
                                 $teamName,

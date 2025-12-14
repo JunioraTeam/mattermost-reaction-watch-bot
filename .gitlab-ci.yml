@@ -1,0 +1,42 @@
+default:
+  image: docker:29
+  services:
+    - name: docker:29-dind
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+        DOCKER_BUILDKIT: 1
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  before_script:
+    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  script:
+    - |
+      docker build --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN} -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_SHORT_SHA} .
+      docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_SHORT_SHA}
+      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+        docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+      elif [ "$CI_COMMIT_REF_NAME" = "staging" ]; then
+        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY}/${CI_PROJECT_PATH}:test
+        docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:test
+      fi
+  after_script:
+    - docker logout ${CI_REGISTRY}
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  image: bitnami/kubectl:1.33.4
+  script:
+    - kubectl apply -f k8s.yaml
+    - kubectl rollout restart deployment/mattermost-reaction-watch-bot --namespace mattermost
